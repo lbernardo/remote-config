@@ -19,6 +19,7 @@ type Sync struct {
 	project     string
 	configFile  string
 	namespace   string
+	path        string
 }
 
 func New() *Sync {
@@ -63,8 +64,16 @@ func (s *Sync) SetNamespace(namespace string) *Sync {
 	return s
 }
 
+func (s *Sync) SetPath(path string) *Sync {
+	s.path = path
+	return s
+}
+
 func (s *Sync) Sync() {
 	key := fmt.Sprintf("%v/%v/%v/%v", s.project, s.environment, s.namespace, s.configFile)
+	if s.path != "" {
+		key = s.path
+	}
 	object, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(key),
